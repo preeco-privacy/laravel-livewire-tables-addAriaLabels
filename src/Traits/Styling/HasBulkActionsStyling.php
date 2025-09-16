@@ -2,8 +2,10 @@
 
 namespace Rappasoft\LaravelLivewireTables\Traits\Styling;
 
+use Closure;
 use Illuminate\View\ComponentAttributeBag;
 use Livewire\Attributes\Computed;
+use Illuminate\Database\Eloquent\Model;
 
 trait HasBulkActionsStyling
 {
@@ -15,7 +17,7 @@ trait HasBulkActionsStyling
 
     protected array $bulkActionsTdAttributes = ['default' => null, 'default-colors' => null, 'default-styling' => null];
 
-    protected array $bulkActionsTdCheckboxAttributes = ['default' => null, 'default-colors' => null, 'default-styling' => null];
+    protected array|Closure $bulkActionsTdCheckboxAttributesCallback = ['default' => null, 'default-colors' => null, 'default-styling' => null];
 
     protected array $bulkActionsButtonAttributes = ['default-colors' => true, 'default-styling' => true];
 
@@ -110,17 +112,28 @@ trait HasBulkActionsStyling
      * @return array<mixed>
      */
     #[Computed]
-    public function getBulkActionsTdCheckboxAttributes(): array
+    public function getBulkActionsTdCheckboxAttributes(Model $row, int $index): array
     {
-        return array_merge(
-            [
-                'x-show' => '!currentlyReorderingStatus',
-                'x-model' => 'selectedItems',
-                'wire:loading.attr.delay' => 'disabled',
-                'type' => 'checkbox',
-            ],
-            $this->getCustomAttributesNew('bulkActionsTdCheckboxAttributes', true, true)
-        );
+        $defaultAttributes = [
+            'x-show' => '!currentlyReorderingStatus',
+            'x-model' => 'selectedItems',
+            'wire:loading.attr.delay' => 'disabled',
+            'type' => 'checkbox',
+        ];
+
+        if (is_callable($this->bulkActionsTdCheckboxAttributesCallback)) {
+            // Closure wird ausgeführt
+            $customAttributes = ($this->bulkActionsTdCheckboxAttributesCallback)($row, $index);
+            return array_merge($defaultAttributes, $customAttributes ?: []);
+        }
+
+        if (is_array($this->bulkActionsTdCheckboxAttributesCallback)) {
+            // Rückwärtskompatibilität: Array wird übernommen
+            return array_merge($defaultAttributes, $this->bulkActionsTdCheckboxAttributesCallback);
+        }
+
+        // Fallback: Nur Default-Attribute
+        return $defaultAttributes;
     }
 
     /**
@@ -177,9 +190,14 @@ trait HasBulkActionsStyling
     /**
      * Used to set attributes for the Bulk Actions Checkbox in the Row
      */
-    public function setBulkActionsTdCheckboxAttributes(array $bulkActionsTdCheckboxAttributes): self
+    public function setBulkActionsTdCheckboxAttributes($attributes): self
     {
-        return $this->setCustomAttributesDefaults('bulkActionsTdCheckboxAttributes', $bulkActionsTdCheckboxAttributes);
+        if (is_callable($attributes) || is_array($attributes)) {
+            $this->bulkActionsTdCheckboxAttributesCallback = $attributes;
+        } else {
+            throw new \InvalidArgumentException('setBulkActionsTdCheckboxAttributes akzeptiert nur ein Closure oder ein Array.');
+        }
+        return $this;
     }
 
     /**
