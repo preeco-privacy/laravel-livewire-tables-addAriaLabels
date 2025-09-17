@@ -176,7 +176,9 @@ final class BulkActionsStylingConfigurationTest extends TestCase
         $this->assertSame($defaultAttributeBag->getAttributes(), $returnedAttributeBag->getAttributes());
 
         $this->basicTable->setBulkActionsTdCheckboxAttributes([
+            'default' => false,
             'default-colors' => true,
+            'default-styling' => false,
             'class' => 'w-12',
         ]);
 

@@ -3,9 +3,9 @@
 namespace Rappasoft\LaravelLivewireTables\Traits\Styling;
 
 use Closure;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\View\ComponentAttributeBag;
 use Livewire\Attributes\Computed;
-use Illuminate\Database\Eloquent\Model;
 
 trait HasBulkActionsStyling
 {
@@ -107,12 +107,13 @@ trait HasBulkActionsStyling
     }
 
     /**
-     * Used to get attributes for the Bulk Actions TD
+     * Used to get attributes for the Bulk Actions TD.
+     * The parameters are nullable so that the method can be called without any arguments. (Backward compatibility)
      *
      * @return array<mixed>
      */
     #[Computed]
-    public function getBulkActionsTdCheckboxAttributes(Model $row, int $index): array
+    public function getBulkActionsTdCheckboxAttributes(Model $row = null, int $index = null): array
     {
         $defaultAttributes = [
             'x-show' => '!currentlyReorderingStatus',
@@ -127,7 +128,8 @@ trait HasBulkActionsStyling
         }
 
         if (is_array($this->bulkActionsTdCheckboxAttributes)) {
-            return array_merge($defaultAttributes, $this->bulkActionsTdCheckboxAttributes);
+            return array_merge($defaultAttributes,
+                $this->getCustomAttributesNew('bulkActionsTdCheckboxAttributes', true, true));
         }
 
         return $defaultAttributes;
