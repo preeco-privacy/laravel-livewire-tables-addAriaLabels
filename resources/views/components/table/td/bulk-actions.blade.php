@@ -3,6 +3,7 @@
 
 @php
     $tdAttributes = $this->getBulkActionsTdAttributes;
+    // $tdCheckboxAttributes = $this->getBulkActionsTdCheckboxAttributes($row, $rowIndex);
     $tdCheckboxAttributes = $this->getBulkActionsTdCheckboxAttributes;
 @endphp
 
@@ -12,9 +13,10 @@
             'inline-flex rounded-md shadow-sm' => $isTailwind,
             'form-check' => $isBootstrap5,
         ])>
-            <x-livewire-tables::forms.checkbox 
-                wire:key="{{ $tableName . 'selectedItems-'.$row->{$primaryKey} }}" 
+            <x-livewire-tables::forms.checkbox
+                wire:key="{{ $tableName . 'selectedItems-'.$row->{$primaryKey} }}"
                 value="{{ $row->{$primaryKey} }}"
+                {{-- :$row--}}
                 :checkboxAttributes=$tdCheckboxAttributes
             />
         </div>

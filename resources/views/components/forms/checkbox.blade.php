@@ -1,5 +1,7 @@
 @aware(['tableName','primaryKey', 'isTailwind', 'isBootstrap', 'isBootstrap4', 'isBootstrap5'])
-@props(['checkboxAttributes'])
+@props(['checkboxAttributes',
+//'row'
+])
 <input x-cloak
     {{
         $attributes->merge($checkboxAttributes)->class([
@@ -8,4 +10,5 @@
             'form-check-input' => ($isBootstrap5) && ($checkboxAttributes['default'] ?? true),
         ])->except(['default','default-styling','default-colors'])
     }}
+    {{--    aria-label="select row number {{$row->id}}"--}}
 />
