@@ -122,17 +122,14 @@ trait HasBulkActionsStyling
         ];
 
         if (is_callable($this->bulkActionsTdCheckboxAttributes)) {
-            // Closure wird ausgeführt
             $customAttributes = ($this->bulkActionsTdCheckboxAttributes)($row, $index);
             return array_merge($defaultAttributes, $customAttributes ?: []);
         }
 
         if (is_array($this->bulkActionsTdCheckboxAttributes)) {
-            // Rückwärtskompatibilität: Array wird übernommen
             return array_merge($defaultAttributes, $this->bulkActionsTdCheckboxAttributes);
         }
 
-        // Fallback: Nur Default-Attribute
         return $defaultAttributes;
     }
 
@@ -190,9 +187,9 @@ trait HasBulkActionsStyling
     /**
      * Used to set attributes for the Bulk Actions Checkbox in the Row
      */
-    public function setBulkActionsTdCheckboxAttributes(array|Closure $attributes): self
+    public function setBulkActionsTdCheckboxAttributes(array|Closure $bulkActionsTdCheckboxAttributes): self
     {
-        $this->bulkActionsTdCheckboxAttributes = $attributes;
+        $this->bulkActionsTdCheckboxAttributes = $bulkActionsTdCheckboxAttributes;
         return $this;
     }
 
