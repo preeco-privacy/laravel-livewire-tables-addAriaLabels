@@ -17,7 +17,7 @@ trait HasBulkActionsStyling
 
     protected array $bulkActionsTdAttributes = ['default' => null, 'default-colors' => null, 'default-styling' => null];
 
-    protected array|Closure $bulkActionsTdCheckboxAttributesCallback = ['default' => null, 'default-colors' => null, 'default-styling' => null];
+    protected array|Closure $bulkActionsTdCheckboxAttributes = ['default' => null, 'default-colors' => null, 'default-styling' => null];
 
     protected array $bulkActionsButtonAttributes = ['default-colors' => true, 'default-styling' => true];
 
@@ -121,15 +121,15 @@ trait HasBulkActionsStyling
             'type' => 'checkbox',
         ];
 
-        if (is_callable($this->bulkActionsTdCheckboxAttributesCallback)) {
+        if (is_callable($this->bulkActionsTdCheckboxAttributes)) {
             // Closure wird ausgeführt
-            $customAttributes = ($this->bulkActionsTdCheckboxAttributesCallback)($row, $index);
+            $customAttributes = ($this->bulkActionsTdCheckboxAttributes)($row, $index);
             return array_merge($defaultAttributes, $customAttributes ?: []);
         }
 
-        if (is_array($this->bulkActionsTdCheckboxAttributesCallback)) {
+        if (is_array($this->bulkActionsTdCheckboxAttributes)) {
             // Rückwärtskompatibilität: Array wird übernommen
-            return array_merge($defaultAttributes, $this->bulkActionsTdCheckboxAttributesCallback);
+            return array_merge($defaultAttributes, $this->bulkActionsTdCheckboxAttributes);
         }
 
         // Fallback: Nur Default-Attribute
@@ -190,13 +190,9 @@ trait HasBulkActionsStyling
     /**
      * Used to set attributes for the Bulk Actions Checkbox in the Row
      */
-    public function setBulkActionsTdCheckboxAttributes($attributes): self
+    public function setBulkActionsTdCheckboxAttributes(array|Closure $attributes): self
     {
-        if (is_callable($attributes) || is_array($attributes)) {
-            $this->bulkActionsTdCheckboxAttributesCallback = $attributes;
-        } else {
-            throw new \InvalidArgumentException('setBulkActionsTdCheckboxAttributes akzeptiert nur ein Closure oder ein Array.');
-        }
+        $this->bulkActionsTdCheckboxAttributes = $attributes;
         return $this;
     }
 
